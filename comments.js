@@ -1,48 +1,15 @@
+const http = require('http');
+
 //create web server
-import express from 'express';
-const { static: serveStatic } = express;
-const app = express();
-import { json } from 'body-parser';
-import { readFile, writeFile } from 'fs';
-import { join } from 'path';
-const commentsPath = join(__dirname, 'comments.json');
+const hostname = '127.0.0.1';
+const port = 3000;
 
-app.use(json());
-app.use(serveStatic('public'));
-
-//get comments
-app.get('/comments', (req, res) => {
-    readFile(commentsPath, (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading comments.json');
-            return;
-        }
-        res.send(data);
-    });
+const server = http.createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('Hello, World!\n');
 });
 
-//post comments
-app.post('/comments', (req, res) => {
-    readFile(commentsPath, (err, data) => {
-        if (err) {
-            res.status(500).send('Error reading comments.json');
-            return;
-        }
-        let comments = JSON.parse(data);
-        comments.push(req.body);
-        writeFile(commentsPath, JSON.stringify(comments), (err) => {
-            if (err) {
-                res.status(500).send('Error writing comments.json');
-                return;
-            }
-            res.send('Comment added');
-        });
-    });
+server.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
 });
-
-app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000');
-}
-);
-
-
